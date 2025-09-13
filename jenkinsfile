@@ -31,6 +31,7 @@ pipeline {
                 echo 'Running Selenium Tests...'
                 script {
                     try {
+                        sh 'cd selenium-tests && npm install'
                         sh 'node selenium-tests/test_form.js'
                         writeFile file: env.TEST_RESULT_FILE, text: 'true'
                     } catch (Exception e) {
