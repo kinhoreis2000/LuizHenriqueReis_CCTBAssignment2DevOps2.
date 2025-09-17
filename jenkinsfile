@@ -43,19 +43,21 @@ pipeline {
         }
 
         stage('Deploy to Production') {
-            when {
-                expression {
-                    def result = readFile(env.TEST_RESULT_FILE).trim()
-                    return result == 'true'
-                }
-            }
-            steps {
-                echo 'Deploying to Production Server...'
-                sh """
-                ssh ec2-user@$PRODUCTION_SERVER "sudo rm -rf /var/www/html/*"
-                ssh ec2-user@$PRODUCTION_SERVER "git clone $REPO_URL /var/www/html"
-                """
-            }
+    when {
+        expression {
+            def result = readFile(env.TEST_RESULT_FILE).trim()
+            return result == 'true'
         }
+    }
+    steps {
+        echo 'Deploying to Production Server...'
+        sh '''
+            sudo mkdir -p /var/www/production
+            sudo rm -rf /var/www/production/*
+            sudo cp -r *.html *.css *.js /var/www/production/
+            sudo systemctl restart httpd
+        '''
+    }
+}
     }
 }
