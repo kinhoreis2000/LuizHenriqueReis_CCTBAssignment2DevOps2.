@@ -28,6 +28,8 @@ pipeline {
 
         stage('Run Selenium Tests') {
             steps {
+                echo 'Installing test dependencies...'
+                sh 'cd selenium-tests && npm install'
                 echo 'Running Selenium Tests...'
                 script {
                     try {
