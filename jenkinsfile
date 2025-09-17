@@ -19,7 +19,7 @@ pipeline {
             steps {
                 echo 'Deploying to Testing Server...'
                // Already deployed 
-		// sh """
+               // sh """
                // ssh ec2-user@$TESTING_SERVER "sudo rm -rf /var/www/html/*"
                // ssh ec2-user@$TESTING_SERVER "git clone $REPO_URL /var/www/html"
                // """
@@ -43,21 +43,35 @@ pipeline {
         }
 
         stage('Deploy to Production') {
-    when {
-        expression {
-            def result = readFile(env.TEST_RESULT_FILE).trim()
-            return result == 'true'
+            when {
+                expression {
+                    def result = readFile(env.TEST_RESULT_FILE).trim()
+                    return result == 'true'
+                }
+            }
+            steps {
+                echo 'Deploying to Production Server...'
+                sh '''
+                    sudo mkdir -p /var/www/production
+                    sudo rm -rf /var/www/production/*
+                    sudo cp -r *.html *.css *.js /var/www/production/
+                '''
+                echo 'Production deployment completed successfully!'
+            }
         }
     }
-    steps {
-        echo 'Deploying to Production Server...'
-        sh '''
-            sudo mkdir -p /var/www/production
-            sudo rm -rf /var/www/production/*
-            sudo cp -r *.html *.css *.js /var/www/production/
-            sudo systemctl restart httpd
-        '''
-    }
-}
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+            echo "Testing Environment: http://${env.TESTING_SERVER}"
+            echo "Production Environment: http://${env.PRODUCTION_SERVER}"
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+        always {
+            echo 'Cleaning up...'
+        }
     }
 }
