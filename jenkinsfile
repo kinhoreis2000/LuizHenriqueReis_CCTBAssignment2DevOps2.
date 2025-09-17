@@ -4,7 +4,7 @@ pipeline {
         TEST_RESULT_FILE = 'test_result.txt'
         REPO_URL = 'https://github.com/kinhoreis2000/LuizHenriqueReis_CCTBAssignment2DevOps2.'
         TESTING_SERVER = '98.89.24.23'
-        PRODUCTION_SERVER = '<Production-Server-IP>'
+        PRODUCTION_SERVER = '98.84.155.100'
     }
 
     stages {
